@@ -1,0 +1,18 @@
+version: 0.0
+os: linux
+
+files:
+  - source: employees-service-0.5.0-thorntail.jar
+    destination: /opt
+  - source: employees.service
+    destination: /opt  
+hooks:
+  ApplicationStop:
+    - location: stop_app.sh
+      timeout: 10
+      runas: root
+  ApplicationStart: 
+    - location: start_app.sh
+      timeout: 30
+      runas: root
+      

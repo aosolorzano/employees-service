@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto11
+  build:
+    commands:
+      - echo BUILD STARTED ON `date`
+      - mvn clean package
+artifacts:
+  files:
+    - appspec.yml
+    - target/employees-service-0.5.0-thorntail.jar
+    - scripts/*
+  discard-paths: yes

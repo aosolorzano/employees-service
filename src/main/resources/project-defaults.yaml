@@ -1,0 +1,27 @@
+project:
+  stage: development
+thorntail:
+  port:
+    offset: 0
+  logging:
+    loggers:
+      org.thorntail.example.jaxrs:
+        level: DEBUG
+  datasources:
+    data-sources:
+      EmployeesReaderDS:
+        driver-name: org.postgresql
+        connection-url: jdbc:postgresql://employees-service-aurora-cluster.cluster-ro-cpdl6ip8gpia.us-east-1.rds.amazonaws.com:5432/employees
+        user-name: employee
+        password: employee
+      EmployeesWriterDS:
+        driver-name: org.postgresql
+        connection-url: jdbc:postgresql://employees-service-aurora-cluster.cluster-cpdl6ip8gpia.us-east-1.rds.amazonaws.com:5432/employees
+        user-name: employee
+        password: employee    
+    jdbc-drivers:
+      org.postgresql:
+        driver-class-name: org.postgresql.Driver
+        xa-datasource-class-name: org.postgresql.xa.PGXADataSource
+        driver-module-name: org.postgresql
+         

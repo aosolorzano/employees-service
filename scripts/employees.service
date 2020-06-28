@@ -1,0 +1,17 @@
+[Unit]
+Description=Employees MicroService
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt
+ExecStart=/bin/bash -c 'exec /bin/java -jar employees-service-0.5.0-thorntail.jar -Djava.net.preferIPv4Stack=true -Dswarm.bind.address=$(curl http://169.254.169.254/latest/meta-data/local-ipv4) > /var/log/employees-service.log'
+TimeoutStartSec=600
+TimeoutStopSec=600
+Restart=no
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target

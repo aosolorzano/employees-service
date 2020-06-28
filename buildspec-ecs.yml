@@ -1,0 +1,39 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto11
+      docker: 18
+    commands:
+      - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
+      - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
+  pre_build:
+    commands:
+    - echo Logging into Amazon ECR...
+    - aws --version
+    - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+    - TASK_CONTAINER_NAME=employees-service-container
+    - IMAGE_REPO_NAME=employees-service
+    - REPOSITORY_URI=266902741410.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
+    - IMAGE_TAG=0.4.0
+  build:
+    commands:
+    - echo Build started on `date`
+    - echo Building Java project...
+    - mvn clean package
+    - echo Building the Docker image...
+    - docker build -t $REPOSITORY_URI:$IMAGE_TAG .
+    - docker tag $REPOSITORY_URI:$IMAGE_TAG $REPOSITORY_URI:latest
+  post_build:
+    commands:
+    - echo Build completed on `date`
+    - echo pushing the Docker image
+    - docker push $REPOSITORY_URI:latest
+    - docker push $REPOSITORY_URI:$IMAGE_TAG
+    - echo Writing image definitions file...
+    - printf '[{"name":"%s","imageUri":"%s"}]' $TASK_CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+    - cat imagedefinitions.json
+artifacts:
+    files: imagedefinitions.json
+ 
